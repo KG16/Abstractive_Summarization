@@ -10,14 +10,12 @@ class Opinosis_Graph():
         pid = []  # .append(PID)
         pid.append(PID)
 
-    '''
     def create_graph:
         opinosisG = nx.Graph()
 
     def insert_node(self):
 
     def update_node(self):
-    '''
 
 
 def read_input_datafiles():
@@ -50,7 +48,7 @@ def opinosis_graph():
         text_pos_tagged = nltk.pos_tag(text)
         sentence_size = text_pos_tagged.__len__()
         print(text_pos_tagged)
-        '''
+
         for j in range(sentence_size):
             LABEL = word_list[j]
             PID = j
@@ -69,7 +67,6 @@ def opinosis_graph():
                 nx.draw(G, with_labels = True)
                 plt.savefig('labels.png')
                 """
-        '''
     return
 
 
