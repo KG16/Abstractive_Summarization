@@ -1,3 +1,5 @@
+import glob
+
 import networkx as nx
 
 import GlobVars
