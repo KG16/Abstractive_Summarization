@@ -1,4 +1,5 @@
 import glob
+from operator import itemgetter
 
 import networkx as nx
 
@@ -6,6 +7,8 @@ import GlobVars
 
 graph_helper = dict()
 G = nx.DiGraph()
+candidates = []
+final_summary_sentences = []
 
 def read_input_datafiles():
     path = "C:\\Users\\kriti\\OneDrive\\Documents\\3-2\\Project\\Dataset"
@@ -52,34 +55,50 @@ def ValidSentence(sentence):
     return 0
 
 
-def Neighbours(LABEL):
-    return G.neighbors
-
-
 def traverse(cList, node_v, score, PRI_overlap, sentence, pathLen):
-    redundancy = PRI_calc(LABEL)
+    redundancy = PRI_calc(node_v)
     if redundancy >= GlobVars.REDUNDANCY_PARA:
         if (VEN(node_v)):
             if ValidSentence(sentence):
                 final_score = score / pathLen
                 cList.append((sentence, final_score))  # check appending tupple in list
-    for vn in Neighbours(LABEL):
+    for vn in G.neighbors(node_v):
         PRI_new = PRI_overlap + PRI_calc(vn)
 
 
-def OpinosisSummarization():
+def eliminate_duplicates(candidates):
+    return candidates
+
+
+def Sort_by_path_score(candidates):
+    return sorted(candidates, key=itemgetter(1))
+
+
+def next_best_sentence(candidates):
+    # delete that sencence from pool
+    return candidates
+
+
+def opinosisSummarization():
     # node_size=G.number_of_nodes()
     node_size = len(graph_helper)
-    for j in range(node_size):
-        if (VSN(j) == 1):
+    all_keys = graph_helper.keys()
+    for node_v in all_keys:
+        if (VSN(node_v) == 1):
             pathLen = 1
             score = 0
             cList = []
-            traverse(cList, LABEL, score, PRI_overlap, LABEL, pathLen)
+            traverse(cList, node_v, score, graph_helper[node_v], node_v, pathLen)
+            candidates.extend(cList)  # not append
+    candidates1 = eliminate_duplicates(candidates)
+    candidates2 = Sort_by_path_score(candidates1)
+    for i in range(GlobVars.SUMMARY_SIZE_PARA):
+        final_summary_sentences.extend(next_best_sentence(candidates2))
 
 
 def main():
     lines_list = read_input_datafiles()
     opinosis_graph(lines_list)
-    print(G.nodes.data())
-    print(list(G.nodes))
+    opinosisSummarization()
+    # print(G.nodes.data())
+    # print(list(G.nodes))
