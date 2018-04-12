@@ -5,7 +5,6 @@ import GlobVars
 graph_helper = dict()
 G = nx.DiGraph()
 
-
 def read_input_datafiles():
     path = "C:\\Users\\kriti\\OneDrive\\Documents\\3-2\\Project\\Dataset"
     files = glob.glob(path)
@@ -35,7 +34,6 @@ def opinosis_graph(lines_list):
                 G.add_node(LABEL)
                 if j > 0:  # not first word of sentence  i.e. PID>0
                     G.add_edge(LABEL, word_list[j - 1])
-
 
 def VSN(j):
     return 0
@@ -71,7 +69,6 @@ def traverse(cList, node_v, score, PRI_overlap, sentence, pathLen):
 def OpinosisSummarization():
     # node_size=G.number_of_nodes()
     node_size = len(graph_helper)
-
     for j in range(node_size):
         if (VSN(j) == 1):
             pathLen = 1
