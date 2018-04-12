@@ -1,75 +1,42 @@
-import nltk
+import glob
 
+import networkx as nx
 
-class Opinosis_Graph():
-    def __init__(self, label, pos, SID, PID):
-        label = label
-        pos = pos
-        sid = []
-        sid.append(SID)
-        pid = []  # .append(PID)
-        pid.append(PID)
-
-    def create_graph:
-        opinosisG = nx.Graph()
-
-    def insert_node(self):
-
-    def update_node(self):
-
+graph_helper = dict()
+G = nx.DiGraph()
 
 def read_input_datafiles():
-    path = "C:\\Users\\kriti\\OneDrive\\Documents\\3-2\\Project\\Dataset\\bestanimated"  # \\ to escape the effect of
-    # 2nd \
-    '''
+    path = "C:\\Users\\kriti\\OneDrive\\Documents\\3-2\\Project\\Dataset"
     files = glob.glob(path)
     for file in files:
         f = open(file, 'r')
         lines_list = f.readlines()
         f.close()
-        print(lines_list)
-    '''
-    f = open(path, 'r')
-    lines_list = f.readlines()
-
-    print("0 Yo")
-    print(lines_list)
     return lines_list
 
 
-def opinosis_graph():
+def opinosis_graph(lines_list):
     lines_list = read_input_datafiles()
-    # lines_list="Hi, I'm doing tagging now."
     no_sentences = lines_list.__len__()
     for i in range(no_sentences):
-        # word_list = lines_list[i].split()  # for  the current sentence only
-        print("1")
-        text = nltk.word_tokenize(lines_list[i])
-        text_pos_tagged = nltk.pos_tag(text)
-        sentence_size = text_pos_tagged.__len__()
-        print(text_pos_tagged)
-
+        word_list = lines_list[i].split()  # for  the current sentence only
+        for i in range(word_list.__len__()):
+            print(word_list[i])
+        sentence_size = word_list.__len__()
         for j in range(sentence_size):
             LABEL = word_list[j]
             PID = j
             SID = i
-            new_node = Opinosis_Graph(LABEL, SID, PID)
-            if new_node.LABEL not in G:  #checking with just label not complete node
-
-                new_node.insert_node()  # do I need to pass parameters
+            if LABEL in graph_helper.keys():
+                graph_helper[LABEL].append((SID, PID))
             else:
-                new_node.update_node()
-                
-                """
-                G=nx.Graph()
-                # Add nodes and edges
-                G.add_edge("Node1", "Node2")
-                nx.draw(G, with_labels = True)
-                plt.savefig('labels.png')
-                """
-    return
-
+                graph_helper[LABEL] = [(SID, PID)]
+                G.add_node(LABEL)
+                if j > 0:  # not first word of sentence  i.e. PID>0
+                    G.add_edge(LABEL, word_list[j - 1])
 
 def main():
-    opinosis_graph()
-    print("2")
+    lines_list = read_input_datafiles()
+    opinosis_graph(lines_list)
+    print(G.nodes.data())
+    print(list(G.nodes))
