@@ -18,7 +18,6 @@ def read_input_datafiles():
 
 
 def opinosis_graph(lines_list):
-    lines_list = read_input_datafiles()
     no_sentences = lines_list.__len__()
     for i in range(no_sentences):
         word_list = lines_list[i].split()  # for  the current sentence only
