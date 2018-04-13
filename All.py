@@ -13,9 +13,10 @@ final_summary_sentences = []
 def read_input_datafiles():
     path = "C:\\Users\\kriti\\OneDrive\\Documents\\3-2\\Project\\Dataset"
     files = glob.glob(path)
+    lines_list = []  # do I need list of list?
     for file in files:
         f = open(file, 'r')
-        lines_list = f.readlines()
+        lines_list += f.readlines()
         f.close()
     return lines_list
 
@@ -29,17 +30,27 @@ def opinosis_graph(lines_list):
         sentence_size = word_list.__len__()
         for j in range(sentence_size):
             LABEL = word_list[j]
-            PID = j
+            PID = j  #zero based indexing
             SID = i
+            print(LABEL, SID, PID)
             if LABEL in graph_helper.keys():
                 graph_helper[LABEL].append((SID, PID))
             else:
                 graph_helper[LABEL] = [(SID, PID)]
                 G.add_node(LABEL)
                 if j > 0:  # not first word of sentence  i.e. PID>0
-                    G.add_edge(LABEL, word_list[j - 1])
+                    G.add_edge(word_list[j - 1], LABEL)  # directed edge
 
-def VSN(j):
+
+def VSN(node_v):
+    avg = 0
+    list_of_vals = graph_helper[node_v]
+    list_of_vals = sorted(list_of_vals, key=itemgetter(1))
+    for i in range(len(list_of_vals)):
+        avg += list_of_vals[i][1]
+    avg /= len(list_of_vals)
+    if avg <= GlobVars.VSN_PARA:  # why underlined?
+        return 1
     return 0
 
 
@@ -48,6 +59,8 @@ def PRI_calc(LABEL):
 
 
 def VEN(LABEL):
+    if LABEL in [".", ",", "but", "and", "yet"]:
+        return 1
     return 0
 
 
@@ -55,15 +68,24 @@ def ValidSentence(sentence):
     return 0
 
 
+def pathScore(redundancy, pathLen):
+    return 0
+
 def traverse(cList, node_v, score, PRI_overlap, sentence, pathLen):
-    redundancy = PRI_calc(node_v)
+    redundancy = len(graph_helper[node_v])
     if redundancy >= GlobVars.REDUNDANCY_PARA:
         if (VEN(node_v)):
             if ValidSentence(sentence):
                 final_score = score / pathLen
                 cList.append((sentence, final_score))  # check appending tupple in list
-    for vn in G.neighbors(node_v):
+    for vn in G.neighbors(node_v):  #check if directed children only
         PRI_new = PRI_overlap + PRI_calc(vn)
+        # figure out PRI
+        newSent = sentence + " " + node_v
+        newPathLen = pathLen + 1
+        newScore = score + pathScore(redundancy, newPathLen)
+
+
 
 
 def eliminate_duplicates(candidates):
