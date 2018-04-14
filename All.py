@@ -10,20 +10,13 @@ G = nx.DiGraph()
 candidates = []
 final_summary_sentences = []
 
-def read_input_datafiles():
-    path = "C:\\Users\\kriti\\OneDrive\\Documents\\3-2\\Project\\Dataset"
-    files = glob.glob(path)
-    lines_list = []  # do I need list of list?
-    for file in files:
-        f = open(file, 'r')
-        lines_list += f.readlines()
-        f.close()
-    return lines_list
-
-
 def opinosis_graph(lines_list):
     no_sentences = lines_list.__len__()
     for i in range(no_sentences):
+        # text = nltk.word_tokenize("hi, I'm a person called Kriti.")
+        # # word_tokenize("And now for something completely different")
+        #
+        # print(nltk.pos_tag(text))
         word_list = lines_list[i].split()  # for  the current sentence only
         for i in range(word_list.__len__()):
             print(word_list[i])
@@ -81,12 +74,11 @@ def traverse(cList, node_v, score, PRI_overlap, sentence, pathLen):
     for vn in G.neighbors(node_v):  #check if directed children only
         PRI_new = PRI_overlap + PRI_calc(vn)
         # figure out PRI
-        newSent = sentence + " " + node_v
+        newSent = sentence + " " + vn
         newPathLen = pathLen + 1
         newScore = score + pathScore(redundancy, newPathLen)
-
-
-
+        # add if collapsible
+        traverse(cList, vn, newScore, PRI_new, newSent, newPathLen)
 
 def eliminate_duplicates(candidates):
     return candidates
@@ -119,8 +111,11 @@ def opinosisSummarization():
 
 
 def main():
-    lines_list = read_input_datafiles()
-    opinosis_graph(lines_list)
-    opinosisSummarization()
-    # print(G.nodes.data())
-    # print(list(G.nodes))
+    path = "C:\\Users\\kriti\\OneDrive\\Documents\\3-2\\Project\\Dataset"
+    files = glob.glob(path)
+    for file in files:
+        f = open(file, 'r')
+        lines_list = f.readlines()
+        f.close()
+        opinosis_graph(lines_list)
+        opinosisSummarization()
