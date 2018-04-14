@@ -36,7 +36,7 @@ files = glob.glob(path)
 lines_list = []  # do I need list of list?
 for file in files:
     f = open(file, 'r')
-    lines_list += f.readlines()
+    lines_list = f.readlines()
     f.close()
     break
 print(lines_list.lower())

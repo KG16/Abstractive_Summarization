@@ -31,8 +31,8 @@ def opinosis_graph(lines_list):
             else:
                 graph_helper[LABEL] = [(SID, PID)]
                 G.add_node(LABEL)
-                if j > 0:  # not first word of sentence  i.e. PID>0
-                    G.add_edge(word_list[j - 1], LABEL)  # directed edge
+            if j > 0:  # not first word of sentence  i.e. PID>0
+                G.add_edge(word_list[j - 1], LABEL)  # directed edge
 
 
 def VSN(node_v):
@@ -47,12 +47,13 @@ def VSN(node_v):
     return 0
 
 
-def PRI_calc(LABEL):
+def PRI_calc(curr_word, prev_word):
+
     return 0
 
 
 def VEN(LABEL):
-    if LABEL in [".", ",", "but", "and", "yet"]:
+    if LABEL in [".", ",", "but", "and", "yet", "or", "so"]:
         return 1
     return 0
 
@@ -63,6 +64,7 @@ def ValidSentence(sentence):
 
 def pathScore(redundancy, pathLen):
     return 0
+
 
 def traverse(cList, node_v, score, PRI_overlap, sentence, pathLen):
     redundancy = len(graph_helper[node_v])
