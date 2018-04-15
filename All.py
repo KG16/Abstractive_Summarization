@@ -90,7 +90,6 @@ def traverse(c_list, node_v, score, pri_overlap, sentence, path_len):
         traverse(c_list, vn, new_score, pri_new, new_sentence, new_path_len)
 
 
-#
 def eliminate_duplicates(candidates):
     # for i in range(candidates.__len__()):
     #     for j in (i+1, candidates.__len__()):
