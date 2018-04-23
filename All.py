@@ -6,6 +6,7 @@ import networkx as nx
 # import fuzzywuzzy as fuzz
 import pylab as plt
 
+import A2
 import GlobVars
 
 # import nltk
@@ -46,8 +47,9 @@ def vsn(node_v):
     for i in range(len(list_of_values)):
         avg += list_of_values[i][1]
     avg /= len(list_of_values)
-    # print("avg vsn= " + str(avg) + "  len(list_of_values)= " + str(len(list_of_values)) + "  " + node_v) #Reanalyze
-    if avg <= 4:  #change parameter and compare results. Suggested=2.
+    # print("avg vsn= " + str(avg) + "  len(list_of_values)= " + str(len(list_of_values)) + "  " + node_v)
+    # reanalyze for parameter setting- avg VSN
+    if avg <= 4:  # change parameter and compare results. Suggested=2.
         return 1
     return 0
 
@@ -58,7 +60,7 @@ def pri_calc(curr_word, prev_word):
         for j in range(len(graph_helper[prev_word])):
             if graph_helper[curr_word][i][0] != graph_helper[prev_word][j][0]:  # check
                 if abs(graph_helper[curr_word][i][1] - graph_helper[prev_word][j][1]) <= GlobVars.REDUNDANCY_PARA:
-                    count +=1
+                    count += 1
     return 0
 
 
@@ -88,18 +90,18 @@ def path_score(redundancy, path_len):
 
 
 def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
-    redundancy = len(graph_helper[node_v])  #wrong. only for first
+    redundancy = len(graph_helper[node_v])  # wrong. only for first
     if redundancy >= GlobVars.REDUNDANCY_PARA:
         if ven(node_v):
             if check_valid_sentence(sentence) == 1:
                 final_score = score / path_len
                 c_list.append((sentence, final_score))  # check appending tuple in list
-                #check for resetting sentence and other variables
+                # check for resetting sentence and other variables or will the lists return to that state coz recursive?
 
     for vn in G.neighbors(node_v):  # check if directed children only
         if vn not in path:
-            pri_new = pri_overlap + pri_calc(vn, node_v)
-            # figure out PRI
+            pri_new = pri_overlap + graph_helper[
+                vn]  # pri_calc(vn, node_v) # should append this nodes PRI to sentence PRI
             path += vn
             new_sentence = sentence + " " + vn
             new_path_len = path_len + 1
@@ -136,7 +138,9 @@ def create_summary():
             path = []
             traverse(c_list, node_v, score, graph_helper[node_v], node_v, path_len, path)
             candidates.extend(c_list)  # not append
-    candidates1 = eliminate_duplicates(candidates)
+
+    # candidates1 = eliminate_duplicates(candidates)
+    candidates1 = A2.symmetric_sentence_similarity(candidates)
     candidates2 = sort_by_path_score(candidates1)
     for i in range(GlobVars.SUMMARY_SIZE_PARA):
         final_summary_sentences.extend(candidates2[i][0])  # shorten this part
@@ -151,7 +155,7 @@ def main():
         lines_list = f.readlines()
         f.close()
         create_graph(lines_list)
-        print(create_summary())  #print on file save it
+        print(create_summary())  # print on file save it
         break
 
 
