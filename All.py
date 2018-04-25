@@ -100,8 +100,7 @@ def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
 
     for vn in G.neighbors(node_v):  # check if directed children only
         if vn not in path:
-            pri_new = pri_overlap + graph_helper[
-                vn]  # pri_calc(vn, node_v) # should append this nodes PRI to sentence PRI
+            pri_new = pri_overlap + graph_helper[vn]  # should append this nodes PRI to sentence PRI
             path += vn
             new_sentence = sentence + " " + vn
             new_path_len = path_len + 1
@@ -128,7 +127,7 @@ def create_summary():
     # node_size=G.number_of_nodes()
     node_size = len(graph_helper)
     all_keys = graph_helper.keys()
-    candidates = []  # check if needed
+    candidates = []
     final_summary_sentences = []
     for node_v in all_keys:
         if vsn(node_v) == 1:

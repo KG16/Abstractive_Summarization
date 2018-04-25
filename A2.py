@@ -92,10 +92,15 @@ def symmetric_sentence_similarity(candidates):
     no_of_candidates = candidates.__len__()
     for i in range(no_of_candidates):
         for j in range(i + 1, no_of_candidates):
-            print((sentence_similarity(candidates[i], candidates[j]) + sentence_similarity(candidates[j], candidates[
-                i])) / 2)
-            return (sentence_similarity(candidates[i], candidates[j]) + sentence_similarity(candidates[j], candidates[
-                i])) / 2
+            val = (sentence_similarity(candidates[i][0], candidates[j][0] + sentence_similarity(candidates[j][0],
+                                                                                                candidates[
+                                                                                                    i][0])) / 2)
+            if val > 0.5:
+                if candidates[i][1] > candidates[j][1]:
+                    candidates.remove(candidates[j])
+                else:
+                    candidates.remove(candidates[i])
+
 
 
 def main():
