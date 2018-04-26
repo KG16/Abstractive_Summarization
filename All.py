@@ -12,7 +12,7 @@ import GlobVars
 # import nltk
 graph_helper = dict()
 G = nx.DiGraph()
-
+flag = 0
 
 def create_graph(lines_list):
     no_sentences = lines_list.__len__()
@@ -90,20 +90,29 @@ def path_score(redundancy, path_len):
 
 
 def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
+    if flag != 0:
+        return
     redundancy = len(graph_helper[node_v])  # wrong. only for first
     if redundancy >= GlobVars.REDUNDANCY_PARA:
         if ven(node_v):
             if check_valid_sentence(sentence) == 1:
                 final_score = score / path_len
                 c_list.append((sentence, final_score))  # check appending tuple in list
+                global flag
+                flag = 1
+                return
                 # check for resetting sentence and other variables or will the lists return to that state coz recursive?
 
     for vn in G.neighbors(node_v):  # check if directed children only
         if vn not in path:
+            new_path_len = path_len + 1
+            if new_path_len > 10:
+                global flag
+                flag = 2
+                return
             pri_new = pri_overlap + graph_helper[vn]  # should append this nodes PRI to sentence PRI
             path += vn
             new_sentence = sentence + " " + vn
-            new_path_len = path_len + 1
             new_score = score + path_score(redundancy, new_path_len)
             # add if collapsible
             traverse(c_list, vn, new_score, pri_new, new_sentence, new_path_len, path)
@@ -136,7 +145,10 @@ def create_summary():
             c_list = []
             path = []
             traverse(c_list, node_v, score, graph_helper[node_v], node_v, path_len, path)
-            candidates.extend(c_list)  # not append
+            global flag
+            if flag == 0:
+                candidates.extend(c_list)  # not append
+            flag = 0
 
     # candidates1 = eliminate_duplicates(candidates)
     candidates1 = A2.symmetric_sentence_similarity(candidates)
