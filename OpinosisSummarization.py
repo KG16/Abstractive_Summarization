@@ -1,10 +1,10 @@
-import math
 import os
 import re
 from operator import itemgetter
 
 import networkx as nx
 import pylab as plt
+from numpy import random
 
 import GlobVars
 import PruneSimilarSentences
@@ -15,6 +15,8 @@ flag = 0
 
 
 def create_graph(lines_list, file):
+    global G
+    global graph_helper
     no_sentences = lines_list.__len__()
     for i in range(no_sentences):
         # text = nltk.word_tokenize("Wow, what a beautiful day.")
@@ -64,7 +66,7 @@ def pri_calc(curr_word, prev_word):
 
 
 def ven(label):
-    if label in [".", ",", "!", "?"]:  # [".", ",", "but", "and", "yet", "or", "so", "!", "?"]:
+    if label in [".", "!", "?"]:  # [".", ",", "but", "and", "yet", "or", "so", "!", "?"]:
         return 1
     return 0
 
@@ -75,11 +77,13 @@ def check_valid_sentence(sentence):
 
 def path_score(redundancy, path_len):
     # improve
-    return redundancy / math.log(path_len, 2)
+    return redundancy / path_len
 
 
 def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
     global flag
+    global G
+    global graph_helper
     if flag != 0:  # Don't have to traverse that nodes children, return
         return
 
@@ -88,7 +92,10 @@ def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
         if ven(node_v):
             # print(sentence + "  " + str(score))
             if check_valid_sentence(sentence) == 1:
-                final_score = score / math.log(path_len, 2)
+                if path_len == 0:
+                    flag = 2
+                    return
+                final_score = score / path_len
                 c_list.append((sentence, final_score))
                 flag = 1
                 return
@@ -108,13 +115,16 @@ def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
 
 
 def sort_by_path_score(candidates):
-    return sorted(candidates, key=itemgetter(1))
+    return sorted(candidates, key=itemgetter(1), reverse=True)
 
 
 def create_summary():
+    global flag
+    global G
+    global graph_helper
     all_keys = graph_helper.keys()
     candidates = []
-    final_summary_sentences = []
+    final_summary_sentences = ''
     ind = 0
     for node_v in all_keys:
         if vsn(node_v) == 1:
@@ -123,37 +133,56 @@ def create_summary():
             c_list = []
             path = []
             traverse(c_list, node_v, score, graph_helper[node_v], node_v, path_len, path)
-            global flag
             # if flag == 0:
             candidates.extend(c_list)  # not append
             # print(node_v, ind)
             ind += 1
             flag = 0
-    print("candidates len=" + str(candidates.__len__()))
+    # print("candidates len=" + str(candidates.__len__()))
     # for i in range(candidates.__len__()):
     #     print(candidates[i])
     candidates1 = PruneSimilarSentences.symmetric_sentence_similarity(candidates)
-    print("candidates post pruning len=" + str(candidates1.__len__()))
+    # print("candidates post pruning len=" + str(candidates1.__len__()))
     # for i in range(candidates1.__len__()):
     #     print(candidates1[i])
     candidates2 = sort_by_path_score(candidates1)
-    # for i in range(candidates2.__len__()):
-    #     print(candidates2[i])
-    # for i in range(GlobVars.SUMMARY_SIZE_PARA):
-    #     final_summary_sentences.extend(candidates2[i][0])  # shorten this part
+    candidates4 = []
+    candidates3 = []
+    for i in range(candidates2.__len__()):
+        candidates3.append(candidates2[i][0])
+
+    if len(candidates2) >= 12:
+        for i in range(12):
+            candidates4.append(candidates2[i][0])
+        candidates2 = random.choice(candidates4, 4)
+    else:
+        for i in range(candidates2.__len__()):
+            candidates3[i] = candidates2[i][0]
+        candidates2 = candidates3
+
+    for i in range(min(GlobVars.SUMMARY_SIZE_PARA, candidates2.__len__())):
+        final_summary_sentences += candidates2[i]
     return final_summary_sentences
 
 
 def main():
     path = "C:\\Users\\kriti\\Documents\\Project\\Abstractive_Summarization\\Dataset"
+    path2 = "C:\\Users\\kriti\\Documents\\Project\\Abstractive_Summarization\\Output"
     files = os.listdir(path)
+    global G
+    global graph_helper
     for file in files:
         f = open(path + "\\" + file, 'r')
         lines_list = f.readlines()
         f.close()
         create_graph(lines_list, file)
         final_summary = create_summary()  # print on file save it
-        break
+        f = open(path2 + "\\" + file + ".txt", 'w')
+        f.write(final_summary)
+        f.close()
+        print("Finished summarizing file " + file)
+        graph_helper.clear()
+        G.clear()
 
 
 if __name__ == "__main__":

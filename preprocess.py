@@ -14,7 +14,7 @@ def main():
         f = open(path + "\\" + file, 'w')
         for line in lines_list:
             line = line.rstrip('\n')
-            if line[-1] not in [".", ",", "!", "?"]:
+            if line[-1] not in [".", "!", "?"]:
                 line += '.'
             line += '\n'
             f.write(line)
