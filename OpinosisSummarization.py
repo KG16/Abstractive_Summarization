@@ -37,7 +37,7 @@ def create_graph(lines_list, file):
                     G.add_edge(word_list[j - 1], label)  # directed edge from previous to current word
     nx.draw(G, with_labels=True)
     # print("no of selfloops  " + str(nx.number_of_selfloops(G))) # Output=0
-    plt.savefig('opinosis_graph' + str(file) + '.png')
+    plt.savefig('opinosis_graph_' + str(file) + '.png')
 
 
 def vsn(node_v):
@@ -64,7 +64,7 @@ def pri_calc(curr_word, prev_word):
 
 
 def ven(label):
-    if label in [".", ",", "but", "and", "!", "?"]:  # [".", ",", "but", "and", "yet", "or", "so", "!", "?"]:
+    if label in [".", ",", "!", "?"]:  # [".", ",", "but", "and", "yet", "or", "so", "!", "?"]:
         return 1
     return 0
 
@@ -86,7 +86,7 @@ def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
     redundancy = len(graph_helper[node_v])  # wrong. only for first
     if redundancy >= GlobVars.REDUNDANCY_PARA:
         if ven(node_v):
-            print(sentence + "  " + str(score))
+            # print(sentence + "  " + str(score))
             if check_valid_sentence(sentence) == 1:
                 final_score = score / math.log(path_len, 2)
                 c_list.append((sentence, final_score))
@@ -115,6 +115,7 @@ def create_summary():
     all_keys = graph_helper.keys()
     candidates = []
     final_summary_sentences = []
+    ind = 0
     for node_v in all_keys:
         if vsn(node_v) == 1:
             path_len = 1
@@ -125,19 +126,19 @@ def create_summary():
             global flag
             # if flag == 0:
             candidates.extend(c_list)  # not append
+            # print(node_v, ind)
+            ind += 1
             flag = 0
-
     print("candidates len=" + str(candidates.__len__()))
-    for i in range(candidates.__len__()):
-        print(candidates[i])
+    # for i in range(candidates.__len__()):
+    #     print(candidates[i])
     candidates1 = PruneSimilarSentences.symmetric_sentence_similarity(candidates)
-    print("candidates1 len=" + str(candidates1.__len__()))
-    for i in range(candidates1.__len__()):
-        print(candidates1[i])
+    print("candidates post pruning len=" + str(candidates1.__len__()))
+    # for i in range(candidates1.__len__()):
+    #     print(candidates1[i])
     candidates2 = sort_by_path_score(candidates1)
-    print("candidates2 len=" + str(candidates2.__len__()))
-    for i in range(candidates2.__len__()):
-        print(candidates2[i])
+    # for i in range(candidates2.__len__()):
+    #     print(candidates2[i])
     # for i in range(GlobVars.SUMMARY_SIZE_PARA):
     #     final_summary_sentences.extend(candidates2[i][0])  # shorten this part
     return final_summary_sentences
@@ -151,7 +152,7 @@ def main():
         lines_list = f.readlines()
         f.close()
         create_graph(lines_list, file)
-        print(create_summary())  # print on file save it
+        final_summary = create_summary()  # print on file save it
         break
 
 

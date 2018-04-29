@@ -62,34 +62,36 @@ def sentence_similarity(sentence1, sentence2):
 
 def symmetric_sentence_similarity(candidates):
     """ compute the symmetric sentence similarity using Wordnet """
-    # return (sentence_similarity(sentence1, sentence2) + sentence_similarity(sentence2, sentence1)) / 2
     no_of_candidates = candidates.__len__()
+    remove_sen = []
     for i in range(no_of_candidates):
         for j in range(i + 1, no_of_candidates):
-            val = (sentence_similarity(candidates[i][0], candidates[j][0] + sentence_similarity(candidates[j][0],
-                                                                                                candidates[
-                                                                                                    i][0])) / 2)
+            if i in remove_sen or j in remove_sen:
+                continue
+            val = (sentence_similarity(candidates[i][0], candidates[j][0]) + sentence_similarity(candidates[j][0],
+                                                                                                 candidates[i][0])) / 2
             if val > 0.5:
                 if candidates[i][1] > candidates[j][1]:
-                    candidates.remove(candidates[j])
+                    if j not in remove_sen:
+                        remove_sen.append(j)
                 else:
-                    candidates.remove(candidates[i])
+                    if i not in remove_sen:
+                        remove_sen.append(i)
+    remove_sen.sort(reverse=True)
+    for k in remove_sen:
+        del candidates[k]
     return candidates
 
-#
-# def main():
-#     candidates = [
-#         # "Dogs are awesome.",
-#         "Some gorgeous creatures are felines.",
-#         # "Dolphins are swimming mammals.",
-#         "Cats are beautiful animals."
-#     ]
-#     symmetric_sentence_similarity(candidates)
-#     # print(symmetric_sentence_similarity("Cats is beautiful.","Cats are beautiful animals."))
-#
-#
-# #     Some gorgeous creatures are felines.
-#
-#
-# if __name__ == '__main__':
-#     main()
+
+def main():
+    candidates = [
+        ("Dogs are awesome.", 5),
+        ("Some gorgeous creatures are felines.", 10),
+        ("Dolphins are swimming mammals.", 15),
+        ("Cats are beautiful animals.", 20)
+    ]
+    symmetric_sentence_similarity(candidates)
+
+
+if __name__ == '__main__':
+    main()
