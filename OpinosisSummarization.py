@@ -14,7 +14,7 @@ G = nx.DiGraph()
 flag = 0
 
 
-def create_graph(lines_list):
+def create_graph(lines_list, file):
     no_sentences = lines_list.__len__()
     for i in range(no_sentences):
         # text = nltk.word_tokenize("Wow, what a beautiful day.")
@@ -37,7 +37,7 @@ def create_graph(lines_list):
                     G.add_edge(word_list[j - 1], label)  # directed edge from previous to current word
     nx.draw(G, with_labels=True)
     # print("no of selfloops  " + str(nx.number_of_selfloops(G))) # Output=0
-    plt.savefig('opinosis_graph.png')
+    plt.savefig('opinosis_graph' + str(file) + '.png')
 
 
 def vsn(node_v):
@@ -150,7 +150,7 @@ def main():
         f = open(path + "\\" + file, 'r')
         lines_list = f.readlines()
         f.close()
-        create_graph(lines_list)
+        create_graph(lines_list, file)
         print(create_summary())  # print on file save it
         break
 
