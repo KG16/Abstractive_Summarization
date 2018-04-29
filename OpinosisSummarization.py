@@ -1,3 +1,4 @@
+import math
 import os
 import re
 from operator import itemgetter
@@ -36,7 +37,7 @@ def create_graph(lines_list):
                     G.add_edge(word_list[j - 1], label)  # directed edge from previous to current word
     nx.draw(G, with_labels=True)
     # print("no of selfloops  " + str(nx.number_of_selfloops(G))) # Output=0
-    plt.savefig('labels.png')
+    plt.savefig('opinosis_graph.png')
 
 
 def vsn(node_v):
@@ -74,33 +75,23 @@ def check_valid_sentence(sentence):
 
 def path_score(redundancy, path_len):
     # improve
-    return redundancy / path_len
-
-
-# def dfs_recursive(graph, vertex, path=[]):
-#     path += [vertex]
-#
-#     for neighbor in graph[vertex]:
-#         if neighbor not in path:
-#             path = dfs_recursive(graph, neighbor, path)
-#
-#     return path
+    return redundancy / math.log(path_len, 2)
 
 
 def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
     global flag
-    if flag != 0:
+    if flag != 0:  # Don't have to traverse that nodes children, return
         return
+
     redundancy = len(graph_helper[node_v])  # wrong. only for first
     if redundancy >= GlobVars.REDUNDANCY_PARA:
         if ven(node_v):
             print(sentence + "  " + str(score))
             if check_valid_sentence(sentence) == 1:
-                final_score = score / path_len
-                c_list.append((sentence, final_score))  # check appending tuple in list
+                final_score = score / math.log(path_len, 2)
+                c_list.append((sentence, final_score))
                 flag = 1
                 return
-                # check for resetting sentence and other variables or will the lists return to that state coz recursive?
 
     for vn in G.neighbors(node_v):  # check if directed children only
         if vn not in path:
@@ -109,21 +100,11 @@ def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
                 flag = 2
                 return
             pri_new = pri_overlap + graph_helper[vn]  # should append this nodes PRI to sentence PRI
-            path += vn
+            if vn not in path:
+                path.append(vn)
             new_sentence = sentence + " " + vn
             new_score = score + path_score(redundancy, new_path_len)
-            # add if collapsible
             traverse(c_list, vn, new_score, pri_new, new_sentence, new_path_len, path)
-            # what if no valid neighbor exists?
-
-
-def eliminate_duplicates(candidates):
-    # for i in range(candidates.__len__()):
-    #     for j in (i+1, candidates.__len__()):
-    #         if fuzz.ratio>0.5: #(candidates[i],candidates[j])
-    #             #calc lower score sent. and remove
-    #             candidates.remove(candidates[i])
-    return candidates
 
 
 def sort_by_path_score(candidates):
@@ -131,8 +112,6 @@ def sort_by_path_score(candidates):
 
 
 def create_summary():
-    # node_size=G.number_of_nodes()
-    node_size = len(graph_helper)
     all_keys = graph_helper.keys()
     candidates = []
     final_summary_sentences = []
@@ -144,11 +123,10 @@ def create_summary():
             path = []
             traverse(c_list, node_v, score, graph_helper[node_v], node_v, path_len, path)
             global flag
-            if flag == 0:
-                candidates.extend(c_list)  # not append
+            # if flag == 0:
+            candidates.extend(c_list)  # not append
             flag = 0
 
-    # candidates1 = eliminate_duplicates(candidates)
     print("candidates len=" + str(candidates.__len__()))
     for i in range(candidates.__len__()):
         print(candidates[i])
