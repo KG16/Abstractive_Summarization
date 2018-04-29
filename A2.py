@@ -1,19 +1,3 @@
-# import os
-# path = "C:\\Users\\kriti\\Documents\\Project\\Abstractive_Summarization\\Dataset"
-# files = os.listdir(path)
-# for file in files:
-#     newf=""
-#     with open(path + "\\" + file, 'r') as f:
-#         for line in f:
-#             if ("." or ","or "but"or "and"or "yet"or "or" or "so" or "!" or "?") not in line[-1]:
-#                 newf+=line.strip()+".\n"
-#         f.close()
-#     with open(path + "\\" + file, 'w') as f:
-#         f.write(newf)
-#         f.close()
-#
-#     print(newf)
-#     break
 from nltk import word_tokenize, pos_tag
 from nltk.corpus import wordnet as wn
 
@@ -60,13 +44,8 @@ def sentence_similarity(sentence1, sentence2):
     # For each word in the first sentence
     for syn1 in synsets1:
         arr_simi_score = []
-        # print('=========================================')
-        # print(syn1)
-        # print('----------------')
         for syn2 in synsets2:
-            # print(syn2)
             simi_score = syn1.path_similarity(syn2)
-            # print(simi_score)
             if simi_score is not None:
                 arr_simi_score.append(simi_score)
                 # print('----------------')
@@ -79,11 +58,6 @@ def sentence_similarity(sentence1, sentence2):
             # Average the values
     score /= count
     return score
-
-
-# def symmetric_sentence_similarity(sentence1, sentence2):
-#     """ compute the symmetric sentence similarity using Wordnet """
-#     return (sentence_similarity(sentence1, sentence2) + sentence_similarity(sentence2, sentence1)) / 2
 
 
 def symmetric_sentence_similarity(candidates):
@@ -100,22 +74,22 @@ def symmetric_sentence_similarity(candidates):
                     candidates.remove(candidates[j])
                 else:
                     candidates.remove(candidates[i])
+    return candidates
 
-
-
-def main():
-    candidates = [
-        # "Dogs are awesome.",
-        "Some gorgeous creatures are felines.",
-        # "Dolphins are swimming mammals.",
-        "Cats are beautiful animals."
-    ]
-    symmetric_sentence_similarity(candidates)
-    # print(symmetric_sentence_similarity("Cats is beautiful.","Cats are beautiful animals."))
-
-
-#     Some gorgeous creatures are felines.
-
-
-if __name__ == '__main__':
-    main()
+#
+# def main():
+#     candidates = [
+#         # "Dogs are awesome.",
+#         "Some gorgeous creatures are felines.",
+#         # "Dolphins are swimming mammals.",
+#         "Cats are beautiful animals."
+#     ]
+#     symmetric_sentence_similarity(candidates)
+#     # print(symmetric_sentence_similarity("Cats is beautiful.","Cats are beautiful animals."))
+#
+#
+# #     Some gorgeous creatures are felines.
+#
+#
+# if __name__ == '__main__':
+#     main()

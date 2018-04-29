@@ -14,6 +14,7 @@ graph_helper = dict()
 G = nx.DiGraph()
 flag = 0
 
+
 def create_graph(lines_list):
     no_sentences = lines_list.__len__()
     for i in range(no_sentences):
@@ -49,7 +50,7 @@ def vsn(node_v):
     avg /= len(list_of_values)
     # print("avg vsn= " + str(avg) + "  len(list_of_values)= " + str(len(list_of_values)) + "  " + node_v)
     # reanalyze for parameter setting- avg VSN
-    if avg <= 4:  # change parameter and compare results. Suggested=2.
+    if avg <= 5:  # change parameter and compare results. Suggested=2.
         return 1
     return 0
 
@@ -65,7 +66,7 @@ def pri_calc(curr_word, prev_word):
 
 
 def ven(label):
-    if label in [".", ",", "but", "and", "yet", "or", "so", "!", "?"]:
+    if label in [".", ",", "but", "and", "!", "?"]:  # [".", ",", "but", "and", "yet", "or", "so", "!", "?"]:
         return 1
     return 0
 
@@ -90,15 +91,16 @@ def path_score(redundancy, path_len):
 
 
 def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
+    global flag
     if flag != 0:
         return
     redundancy = len(graph_helper[node_v])  # wrong. only for first
     if redundancy >= GlobVars.REDUNDANCY_PARA:
         if ven(node_v):
+            print(sentence + "  " + str(score))
             if check_valid_sentence(sentence) == 1:
                 final_score = score / path_len
                 c_list.append((sentence, final_score))  # check appending tuple in list
-                global flag
                 flag = 1
                 return
                 # check for resetting sentence and other variables or will the lists return to that state coz recursive?
@@ -107,7 +109,6 @@ def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
         if vn not in path:
             new_path_len = path_len + 1
             if new_path_len > 10:
-                global flag
                 flag = 2
                 return
             pri_new = pri_overlap + graph_helper[vn]  # should append this nodes PRI to sentence PRI
@@ -151,10 +152,19 @@ def create_summary():
             flag = 0
 
     # candidates1 = eliminate_duplicates(candidates)
+    print("candidates len=" + str(candidates.__len__()))
+    for i in range(candidates.__len__()):
+        print(candidates[i])
     candidates1 = A2.symmetric_sentence_similarity(candidates)
+    print("candidates1 len=" + str(candidates1.__len__()))
+    for i in range(candidates1.__len__()):
+        print(candidates1[i])
     candidates2 = sort_by_path_score(candidates1)
-    for i in range(GlobVars.SUMMARY_SIZE_PARA):
-        final_summary_sentences.extend(candidates2[i][0])  # shorten this part
+    print("candidates2 len=" + str(candidates2.__len__()))
+    for i in range(candidates2.__len__()):
+        print(candidates2[i])
+    # for i in range(GlobVars.SUMMARY_SIZE_PARA):
+    #     final_summary_sentences.extend(candidates2[i][0])  # shorten this part
     return final_summary_sentences
 
 
