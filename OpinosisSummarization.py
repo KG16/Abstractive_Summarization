@@ -1,3 +1,4 @@
+import math
 import os
 import re
 from operator import itemgetter
@@ -77,6 +78,8 @@ def check_valid_sentence(sentence):
 
 def path_score(redundancy, path_len):
     # improve
+    if math.log(path_len, 2) > 0:
+        return redundancy / math.log(path_len, 2)
     return redundancy / path_len
 
 
@@ -95,7 +98,11 @@ def traverse(c_list, node_v, score, pri_overlap, sentence, path_len, path):
                 if path_len == 0:
                     flag = 2
                     return
-                final_score = score / path_len
+                if math.log(path_len, 2) > 0:
+                    final_score = score / math.log(path_len, 2)
+                else:
+                    final_score = score / path_len
+
                 c_list.append((sentence, final_score))
                 flag = 1
                 return

@@ -70,6 +70,10 @@ def symmetric_sentence_similarity(candidates):
                 continue
             val = (sentence_similarity(candidates[i][0], candidates[j][0]) + sentence_similarity(candidates[j][0],
                                                                                                  candidates[i][0])) / 2
+            print(sentence_similarity(candidates[i][0], candidates[j][0]))
+            print(sentence_similarity(candidates[j][0], candidates[i][0]))
+            print(candidates[i][0], candidates[j][0])
+            print('-----------------------------')
             if val > 0.5:
                 if candidates[i][1] > candidates[j][1]:
                     if j not in remove_sen:
