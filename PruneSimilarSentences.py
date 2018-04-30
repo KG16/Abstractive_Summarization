@@ -80,6 +80,7 @@ def symmetric_sentence_similarity(candidates):
     remove_sen.sort(reverse=True)
     for k in remove_sen:
         del candidates[k]
+    print(candidates)
     return candidates
 
 

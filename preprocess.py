@@ -7,8 +7,6 @@ def main():
     for file in files:
         f = open(path + "\\" + file, 'r')
         lines_list = f.readlines()
-        # for line in lines_list:
-        #     print(line[-1])
         f.close()
 
         f = open(path + "\\" + file, 'w')
