@@ -14,18 +14,21 @@ def main():
 
         line = lines_list[0]
         string = ""
-
+        print(line)
         if 'a' <= lines_list[0] <= 'z':
             string += line[0].upper()
-        for i in range(line.__len__()):
-            if (line[i] in ('.' or ',' or '!')) and line[i - 1] == ' ':
-                if i + 1 < line.__len__() and 'a' <= line[i + 1] <= 'z':
+        for i in range(1, line.__len__()):
+            if (i + 2 < line.__len__() and line[i + 1] in ('.' or ',' or '!')) and line[i] == ' ':
+                if 'a' <= line[i + 2] <= 'z':
                     string += '. '
-                    string += line[i + 1].upper()
-            elif line[i - 1] != '.' or ' ':
-                string += line[i]
+                    string += line[i + 2].upper()
+                    i += 1
+                    continue
+            # elif line[i - 1] != '.' or ' ':
+            #     string += line[i]
             # elif line[i] == ' ' and line[i+1] != '.':
             #     string += line[i]
+            string += line[i]
         f.write(string)
         print(string)
         f.close()
