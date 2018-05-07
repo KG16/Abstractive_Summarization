@@ -1,36 +1,25 @@
-# import grammar_check
-# import fuzzywuzzy as fuzz
-# from fuzzywuzzy import process
-# # # tool = grammar_check.LanguageTool('en-GB')
-# # text = 'This are bad.'
-# # matches = tool.check(text)
-# # len(matches)
-# # grammar_check.correct(text, matches)
-#
-#
-# fuzz.token_sort_ratio("fuzzy wuzzy was a bear", "wuzzy fuzzy was a bear")
-# import language_check
-#
-# tool = language_check.LanguageTool('en-US')
-# text = u'Yay yay YAY Brie Larson! Room was so SO GREAT!!!'
-# text=text.lower()
-# matches = tool.check(text)
-# print(text)
-# print(language_check.correct(text, matches))
-# print("HI")
+import re
 
-# import language_tool
-# lang_tool = language_tool.LanguageTool("en-US")
-# text = "A sentence with a error in the Hitchhiker’s Guide tot he Galaxy"
-# matches = lang_tool.check(text)
-# print(len(matches))
-# language_tool.correct(text, matches)
-#
-#
-# import grammar_check
-#
-# tool = grammar_check.LanguageTool('en-GB')
-# text = 'This are bad.'
-# matches = tool.check(text)
-# # len(matches)
-# print(grammar_check.correct(text, matches))
+import networkx as nx
+
+
+def create_graph(lines_list, file):
+    global G
+    global graph_helper
+    no_sentences = lines_list.__len__()
+    for i in range(no_sentences):
+        word_list = re.findall(r"[\w']+|[.,!?;]", lines_list[i])
+        sentence_size = word_list.__len__()
+        for j in range(sentence_size):
+            label = word_list[j].lower()
+            pid = j
+            sid = i
+            if label in graph_helper.keys():
+                graph_helper[label].append((sid, pid))
+            else:
+                graph_helper[label] = [(sid, pid)]
+                G.add_node(label)
+            if j > 0:
+                if word_list[j - 1] != label:
+                    G.add_edge(word_list[j - 1], label)
+    nx.draw(G, with_labels=True)
